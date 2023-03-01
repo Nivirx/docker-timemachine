@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+ avahi:
+   container_name: avahi
+   image: nivirx/docker-avahi:0.9
+   network_mode: host
+   volumes:
+     - /mnt/tm/config/avahi:/etc/avahi:ro
+   restart: unless-stopped
+ samba:
+   container_name: samba
+   image: nivirx/docker-samba:0.3
+   environment:
+     TZ: 'America/New_York'
+   networks:
+     - default
+   ports:
+     - "137:137/udp"
+     - "138:138/udp"
+     - "139:139/tcp"
+     - "445:445/tcp"
+   read_only: true
+   tmpfs:
+     - /tmp
+   restart: unless-stopped
+   stdin_open: true
+   tty: true
+   volumes:
+     - /mnt/tm/data:/backup:z
+   command: '-s "Time Capsule;/backup;yes;no" -u "user;timemachine123"'
